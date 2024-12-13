@@ -1,0 +1,12 @@
+- This app is for teachers to manage their students attendance and grades.
+- This app mainly for teacher of Indonesian school, so the App language should be in Indonesian.
+- The app is built with Next.js 15 (newest version) and React 19 (newest version)
+- All the code should be written in typescript.
+- The app is using app router and server actions.
+- The App using Shadcn UI that configured in `/components.json` file.
+- Always use the best Shadcn `Form` component example for make a form.
+- use zod for validation for the form that integrated with drizzle orm and shadcn form.
+- The app is hosted on Vercel.
+- The app is using Tailwind CSS for styling.
+- The app is using Drizzle ORM for database operations.
+- The app is using Supabase (postgres) for authentication and database.
