@@ -45,7 +45,7 @@ export function LoginForm() {
         toast.success(res.message, {
           description: res.description,
         });
-        router.push('/');
+        router.push('/dashboard');
       } else {
         toast.error(res.message, {
           description: res.description,
