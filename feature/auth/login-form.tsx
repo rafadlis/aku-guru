@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useTransition } from 'react';
-import { login } from '@/lib/login';
-import { loginSchema } from '@/lib/validations/auth';
-import { Button } from '@/common/ui/button';
+import { useTransition } from "react";
+import { login } from "@/features/auth/login";
+import { loginSchema } from "@/features/auth/auth-schema";
+import { Button } from "@/common/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/common/ui/card';
+} from "@/common/ui/card";
 import {
   Form,
   FormControl,
@@ -18,20 +18,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/common/ui/form';
-import { Input } from '@/common/ui/input';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { z } from 'zod';
-import { useRouter } from 'next/navigation';
+} from "@/common/ui/form";
+import { Input } from "@/common/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
@@ -41,11 +41,11 @@ export function LoginForm() {
   async function onSubmit(data: z.infer<typeof loginSchema>) {
     submitting(async () => {
       const res = await login(data);
-      if (res.status === 'success') {
+      if (res.status === "success") {
         toast.success(res.message, {
           description: res.description,
         });
-        router.push('/dashboard');
+        router.push("/dashboard");
       } else {
         toast.error(res.message, {
           description: res.description,
@@ -104,7 +104,7 @@ export function LoginForm() {
             />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? 'Sedang Masuk...' : 'Masuk'}
+              {isSubmitting ? "Sedang Masuk..." : "Masuk"}
             </Button>
           </form>
         </Form>
