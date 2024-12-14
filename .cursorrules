@@ -9,4 +9,5 @@
 - The app is hosted on Vercel.
 - The app is using Tailwind CSS for styling.
 - The app is using Drizzle ORM for database operations.
+- When interaction with the data, always see `/drizzle/schema.ts` for the database schema and `/drizzle/relations.ts` for the relations.
 - The app is using Supabase (postgres) for authentication and database.
