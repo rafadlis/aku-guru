@@ -27,17 +27,17 @@ export const TugasTable = async () => {
         <TableBody>
           {data.map((tugas) => (
             <TableRow key={tugas.id}>
-              <TableCell className="font-medium">{tugas.namaTugas}</TableCell>
+              <TableCell className="font-medium">{tugas.nama_tugas}</TableCell>
               <TableCell>
-                {tugas.tanggalTugas
-                  ? format(new Date(tugas.tanggalTugas), "dd MMMM yyyy", {
+                {tugas.tanggal_tugas
+                  ? format(new Date(tugas.tanggal_tugas), "dd MMMM yyyy", {
                       locale: id,
                     })
                   : "-"}
               </TableCell>
               <TableCell>
-                {tugas.jatuhTempo
-                  ? format(new Date(tugas.jatuhTempo), "dd MMMM yyyy", {
+                {tugas.jatuh_tempo
+                  ? format(new Date(tugas.jatuh_tempo), "dd MMMM yyyy", {
                       locale: id,
                     })
                   : "-"}
