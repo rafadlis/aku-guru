@@ -1,9 +1,12 @@
 "use server";
 
-import { db_drizzle } from "@/drizzle/server";
-import { Tugas } from "@/drizzle/schema";
+import { createSupabaseClient } from "@/supabase/server";
 
 export async function getTugas() {
-  const data = await db_drizzle.select().from(Tugas).limit(10);
+  const supabase = await createSupabaseClient();
+  const { data, error } = await supabase.from("Tugas").select("*").limit(10);
+  if (error) {
+    throw error;
+  }
   return data;
 }
