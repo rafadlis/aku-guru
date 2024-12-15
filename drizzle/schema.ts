@@ -1,16 +1,22 @@
 import {
   pgTable,
+  text,
   bigint,
   timestamp,
-  text,
   foreignKey,
   integer,
   smallint,
   serial,
   varchar,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 
-export const mataPelajaran = pgTable("MataPelajaran", {
+export const Provinsi = pgTable("Provinsi", {
+  kode_provinsi: text().primaryKey().notNull(),
+  nama_provinsi: text().notNull(),
+});
+
+export const MataPelajaran = pgTable("MataPelajaran", {
   // You can use { mode: "bigint" } if numbers are exceeding js number limitations
   id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({
     name: "MataPelajaran_id_seq",
@@ -19,14 +25,29 @@ export const mataPelajaran = pgTable("MataPelajaran", {
     minValue: 1,
     maxValue: 9223372036854775807,
   }),
-  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+  created_at: timestamp({ withTimezone: true, mode: "string" })
     .defaultNow()
     .notNull(),
-  mataPelajaran: text("mata_pelajaran"),
-  tingkatKelas: text("tingkat_kelas"),
+  mata_pelajaran: text(),
+  tingkat_kelas: text(),
 });
 
-export const nilaiTugas = pgTable(
+export const Sekolah = pgTable("Sekolah", {
+  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+  id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({
+    name: "Sekolah_id_seq",
+    startWith: 1,
+    increment: 1,
+    minValue: 1,
+    maxValue: 9223372036854775807,
+  }),
+  created_at: timestamp({ withTimezone: true, mode: "string" })
+    .defaultNow()
+    .notNull(),
+  nama_sekolah: text(),
+});
+
+export const NilaiTugas = pgTable(
   "NilaiTugas",
   {
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -37,25 +58,25 @@ export const nilaiTugas = pgTable(
       minValue: 1,
       maxValue: 9223372036854775807,
     }),
-    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+    created_at: timestamp({ withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),
-    muridId: integer("murid_id"),
+    murid_id: integer(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    tugasId: bigint("tugas_id", { mode: "number" }),
+    tugas_id: bigint({ mode: "number" }),
     nilai: smallint(),
   },
   (table) => [
     foreignKey({
-      columns: [table.muridId],
-      foreignColumns: [murid.id],
+      columns: [table.murid_id],
+      foreignColumns: [Murid.id],
       name: "NilaiTugas_murid_id_fkey",
     })
       .onUpdate("cascade")
       .onDelete("cascade"),
     foreignKey({
-      columns: [table.tugasId],
-      foreignColumns: [tugas.id],
+      columns: [table.tugas_id],
+      foreignColumns: [Tugas.id],
       name: "NilaiTugas_tugas_id_fkey",
     })
       .onUpdate("cascade")
@@ -63,7 +84,7 @@ export const nilaiTugas = pgTable(
   ]
 );
 
-export const tugas = pgTable(
+export const Tugas = pgTable(
   "Tugas",
   {
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -74,25 +95,19 @@ export const tugas = pgTable(
       minValue: 1,
       maxValue: 9223372036854775807,
     }),
-    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+    created_at: timestamp({ withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),
-    tanggalTugas: timestamp("tanggal_tugas", {
-      withTimezone: true,
-      mode: "string",
-    }),
-    jatuhTempo: timestamp("jatuh_tempo", {
-      withTimezone: true,
-      mode: "string",
-    }),
-    namaTugas: text("nama_tugas"),
+    tanggal_tugas: timestamp({ withTimezone: true, mode: "string" }),
+    jatuh_tempo: timestamp({ withTimezone: true, mode: "string" }),
+    nama_tugas: text(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    mapelId: bigint("mapel_id", { mode: "number" }),
+    mapel_id: bigint({ mode: "number" }),
   },
   (table) => [
     foreignKey({
-      columns: [table.mapelId],
-      foreignColumns: [mataPelajaran.id],
+      columns: [table.mapel_id],
+      foreignColumns: [MataPelajaran.id],
       name: "Tugas_mapel_id_fkey",
     })
       .onUpdate("cascade")
@@ -100,7 +115,49 @@ export const tugas = pgTable(
   ]
 );
 
-export const guru = pgTable("Guru", {
+export const PenempatanGuru = pgTable(
+  "PenempatanGuru",
+  {
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({
+      name: "PenempatanGuru_id_seq",
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      maxValue: 9223372036854775807,
+    }),
+    created_at: timestamp({ withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    guru_id: bigint({ mode: "number" }).notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    sekolah_id: bigint({ mode: "number" }).notNull(),
+    tanggal_mulai: timestamp({ withTimezone: true, mode: "string" }).notNull(),
+    tanggal_selesai: timestamp({
+      withTimezone: true,
+      mode: "string",
+    }).notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.guru_id],
+      foreignColumns: [Guru.id],
+      name: "PenempatanGuru_guru_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    foreignKey({
+      columns: [table.sekolah_id],
+      foreignColumns: [Sekolah.id],
+      name: "PenempatanGuru_sekolah_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("set null"),
+  ]
+);
+
+export const Guru = pgTable("Guru", {
   // You can use { mode: "bigint" } if numbers are exceeding js number limitations
   id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({
     name: "Guru_id_seq",
@@ -109,26 +166,27 @@ export const guru = pgTable("Guru", {
     minValue: 1,
     maxValue: 9223372036854775807,
   }),
-  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+  created_at: timestamp({ withTimezone: true, mode: "string" })
     .defaultNow()
     .notNull(),
-  namaGuru: text("nama_guru"),
+  nama_guru: text().notNull(),
+  nama_panggilan: text(),
 });
 
-export const murid = pgTable(
+export const Murid = pgTable(
   "Murid",
   {
     id: serial().primaryKey().notNull(),
     nama: varchar({ length: 255 }).notNull(),
     kelas: varchar({ length: 255 }).notNull(),
-    nomorAbsen: varchar("nomor_absen", { length: 255 }).notNull(),
+    nomor_absen: varchar({ length: 255 }).notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    kelasId: bigint("kelas_id", { mode: "number" }),
+    kelas_id: bigint({ mode: "number" }),
   },
   (table) => [
     foreignKey({
-      columns: [table.kelasId],
-      foreignColumns: [kelas.id],
+      columns: [table.kelas_id],
+      foreignColumns: [Kelas.id],
       name: "Murid_kelas_id_fkey",
     })
       .onUpdate("cascade")
@@ -136,17 +194,17 @@ export const murid = pgTable(
   ]
 );
 
-export const nilaiUas = pgTable(
+export const NilaiUAS = pgTable(
   "NilaiUAS",
   {
     id: serial().primaryKey().notNull(),
     benar: integer().notNull(),
-    namaLainId: integer("nama_lain_id"),
+    nama_lain_id: integer(),
   },
   (table) => [
     foreignKey({
-      columns: [table.namaLainId],
-      foreignColumns: [namaLain.id],
+      columns: [table.nama_lain_id],
+      foreignColumns: [NamaLain.id],
       name: "nilai_nama_lain_id_nama_lain_id_fk",
     })
       .onUpdate("cascade")
@@ -154,18 +212,18 @@ export const nilaiUas = pgTable(
   ]
 );
 
-export const namaLain = pgTable(
+export const NamaLain = pgTable(
   "NamaLain",
   {
     id: serial().primaryKey().notNull(),
-    namaLain: varchar("nama_lain", { length: 255 }).notNull(),
+    nama_lain: varchar({ length: 255 }).notNull(),
     kelas: varchar({ length: 255 }).notNull(),
-    muridId: integer("murid_id"),
+    murid_id: integer(),
   },
   (table) => [
     foreignKey({
-      columns: [table.muridId],
-      foreignColumns: [murid.id],
+      columns: [table.murid_id],
+      foreignColumns: [Murid.id],
       name: "NamaLain_murid_id_fkey",
     })
       .onUpdate("cascade")
@@ -173,23 +231,37 @@ export const namaLain = pgTable(
   ]
 );
 
-export const kelas = pgTable("Kelas", {
-  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-  id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({
-    name: "Kelas_id_seq",
-    startWith: 1,
-    increment: 1,
-    minValue: 1,
-    maxValue: 9223372036854775807,
-  }),
-  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
-    .defaultNow()
-    .notNull(),
-  namaKelas: text("nama_kelas"),
-  tingkat: text(),
-});
+export const Kelas = pgTable(
+  "Kelas",
+  {
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({
+      name: "Kelas_id_seq",
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      maxValue: 9223372036854775807,
+    }),
+    created_at: timestamp({ withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    nama_kelas: text(),
+    tingkat: text(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    sekolah_id: bigint({ mode: "number" }),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.sekolah_id],
+      foreignColumns: [Sekolah.id],
+      name: "Kelas_sekolah_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("set null"),
+  ]
+);
 
-export const jadwal = pgTable(
+export const Jadwal = pgTable(
   "Jadwal",
   {
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -200,36 +272,135 @@ export const jadwal = pgTable(
       minValue: 1,
       maxValue: 9223372036854775807,
     }),
-    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+    created_at: timestamp({ withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    kelasId: bigint("kelas_id", { mode: "number" }),
-    waktuMulai: timestamp("waktu_mulai", {
-      withTimezone: true,
-      mode: "string",
-    }),
-    waktuSelesai: timestamp("waktu_selesai", {
-      withTimezone: true,
-      mode: "string",
-    }),
+    kelas_id: bigint({ mode: "number" }).notNull(),
+    waktu_mulai: timestamp({ withTimezone: true, mode: "string" }).notNull(),
+    waktu_selesai: timestamp({ withTimezone: true, mode: "string" }).notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    mapelId: bigint("mapel_id", { mode: "number" }),
+    mapel_id: bigint({ mode: "number" }).notNull(),
   },
   (table) => [
     foreignKey({
-      columns: [table.kelasId],
-      foreignColumns: [kelas.id],
+      columns: [table.kelas_id],
+      foreignColumns: [Kelas.id],
       name: "JadwalGuru_kelas_id_fkey",
     })
       .onUpdate("cascade")
       .onDelete("set null"),
     foreignKey({
-      columns: [table.mapelId],
-      foreignColumns: [mataPelajaran.id],
+      columns: [table.mapel_id],
+      foreignColumns: [MataPelajaran.id],
       name: "Jadwal_mapel_id_fkey",
     })
       .onUpdate("cascade")
       .onDelete("set null"),
+  ]
+);
+
+export const Kabupaten = pgTable(
+  "Kabupaten",
+  {
+    kode_kabupaten: text().notNull(),
+    kode_provinsi: text().notNull(),
+    nama_kabupaten: text().notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.kode_provinsi],
+      foreignColumns: [Provinsi.kode_provinsi],
+      name: "Kabupaten_kode_provinsi_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("set null"),
+    primaryKey({
+      columns: [table.kode_kabupaten, table.kode_provinsi],
+      name: "Kabupaten_pkey",
+    }),
+  ]
+);
+
+export const Kecamatan = pgTable(
+  "Kecamatan",
+  {
+    kode_provinsi: text().notNull(),
+    kode_kabupaten: text().notNull(),
+    kode_kecamatan: text().notNull(),
+    nama_kecamatan: text().notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.kode_provinsi, table.kode_kabupaten],
+      foreignColumns: [Kabupaten.kode_kabupaten, Kabupaten.kode_provinsi],
+      name: "Kecamatan_kode_kabupaten_kode_provinsi_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("set null"),
+    foreignKey({
+      columns: [table.kode_provinsi],
+      foreignColumns: [Provinsi.kode_provinsi],
+      name: "Kecamatan_kode_provinsi_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("set null"),
+    primaryKey({
+      columns: [
+        table.kode_provinsi,
+        table.kode_kabupaten,
+        table.kode_kecamatan,
+      ],
+      name: "Kecamatan_pkey",
+    }),
+  ]
+);
+
+export const DesaKelurahan = pgTable(
+  "DesaKelurahan",
+  {
+    kode_provinsi: text().notNull(),
+    kode_kabupaten: text().notNull(),
+    kode_kecamatan: text().notNull(),
+    nama_desa_kelurahan: text().notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.kode_provinsi, table.kode_kabupaten],
+      foreignColumns: [Kabupaten.kode_kabupaten, Kabupaten.kode_provinsi],
+      name: "DesaKelurahan_kode_kabupaten_kode_provinsi_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("set null"),
+    foreignKey({
+      columns: [
+        table.kode_provinsi,
+        table.kode_kabupaten,
+        table.kode_kecamatan,
+      ],
+      foreignColumns: [
+        Kecamatan.kode_provinsi,
+        Kecamatan.kode_kabupaten,
+        Kecamatan.kode_kecamatan,
+      ],
+      name: "DesaKelurahan_kode_kecamatan_kode_provinsi_kode_kabupaten_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("set null"),
+    foreignKey({
+      columns: [table.kode_provinsi],
+      foreignColumns: [Provinsi.kode_provinsi],
+      name: "DesaKelurahan_kode_provinsi_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("set null"),
+    primaryKey({
+      columns: [
+        table.kode_provinsi,
+        table.kode_kabupaten,
+        table.kode_kecamatan,
+      ],
+      name: "DesaKelurahan_pkey",
+    }),
   ]
 );
