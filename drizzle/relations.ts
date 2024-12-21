@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { Kabupaten, Sekolah, Provinsi, Murid, NilaiTugas, Tugas, MataPelajaran, Guru, PenempatanGuru, NamaLain, NilaiUAS, Kelas, Jadwal, Kecamatan, DesaKelurahan } from "./schema";
+import { Kabupaten, Sekolah, Provinsi, Murid, NilaiTugas, Tugas, Guru, PenempatanGuru, MataPelajaran, NamaLain, NilaiUAS, Kelas, Jadwal, Kecamatan, DesaKelurahan } from "./schema";
 
 export const SekolahRelations = relations(Sekolah, ({one, many}) => ({
 	Kabupaten: one(Kabupaten, {
@@ -59,12 +59,7 @@ export const TugasRelations = relations(Tugas, ({one, many}) => ({
 	}),
 }));
 
-export const MataPelajaranRelations = relations(MataPelajaran, ({many}) => ({
-	Tugases: many(Tugas),
-	Jadwals: many(Jadwal),
-}));
-
-export const PenempatanGuruRelations = relations(PenempatanGuru, ({one}) => ({
+export const PenempatanGuruRelations = relations(PenempatanGuru, ({one, many}) => ({
 	Guru: one(Guru, {
 		fields: [PenempatanGuru.guru_id],
 		references: [Guru.id]
@@ -73,10 +68,16 @@ export const PenempatanGuruRelations = relations(PenempatanGuru, ({one}) => ({
 		fields: [PenempatanGuru.sekolah_id],
 		references: [Sekolah.id]
 	}),
+	Jadwals: many(Jadwal),
 }));
 
 export const GuruRelations = relations(Guru, ({many}) => ({
 	PenempatanGurus: many(PenempatanGuru),
+}));
+
+export const MataPelajaranRelations = relations(MataPelajaran, ({many}) => ({
+	Tugases: many(Tugas),
+	Jadwals: many(Jadwal),
 }));
 
 export const NilaiUASRelations = relations(NilaiUAS, ({one}) => ({
@@ -111,6 +112,10 @@ export const JadwalRelations = relations(Jadwal, ({one}) => ({
 	MataPelajaran: one(MataPelajaran, {
 		fields: [Jadwal.mapel_id],
 		references: [MataPelajaran.id]
+	}),
+	PenempatanGuru: one(PenempatanGuru, {
+		fields: [Jadwal.penempatan_guru_id],
+		references: [PenempatanGuru.id]
 	}),
 }));
 
