@@ -1,6 +1,7 @@
 - This app is for teachers to manage their students attendance and grades.
 - This app mainly for teacher of Indonesian school, so the App language should be in Indonesian.
 - The app is built with Next.js 15 (newest version) and React 19 (newest version)
+- the app is using experimental `ppr` or partial prerendering and `dynamicIO` from Next.js 15.
 - All the code should be written in typescript.
 - The app is using app router and server actions.
 - The App using Shadcn UI that configured in `@/components.json` file and put in `@/common/ui` folder.
@@ -9,5 +10,7 @@
 - The app is hosted on Vercel.
 - The app is using Tailwind CSS for styling.
 - The app is using Drizzle ORM for database operations.
-- When interaction with the data, always see `@/drizzle/schema.ts` for the database schema and `@/drizzle/relations.ts` for the relations.
-- The app is using Supabase (postgres) for authentication and database.
+- The app is using Supabase (postgres) for authentication and database using `supabase-js` package.
+- see `@/drizzle/schema.ts` for the database schema and `@/drizzle/relations.ts` for the relations when use drizzle orm using `@/drizzle/server.ts` file.
+- always prioritize using `supabase-js` for database operations using `@/supabase/server.ts` file instead of drizzle orm.
+- always prioritize using `supabase-js` for authentication and authorization using `@/supabase/server.ts` file instead of drizzle orm.
