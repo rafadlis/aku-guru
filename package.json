@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:pull": "drizzle-kit pull --config=drizzle.config.ts  && supabase gen types typescript --project-id whsbqcnfiqaqipsatupd --schema public > common/supabase.types.ts",
+    "fix:schema": "tsx scripts/fix-schema.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -36,10 +38,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/prettier": "^3.0.0",
     "drizzle-kit": "^0.30.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.1-canary.2",
     "postcss": "^8",
+    "prettier": "^3.2.5",
+    "supabase": "^2.1.1",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.19.2",
     "typescript": "^5"
