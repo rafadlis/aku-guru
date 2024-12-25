@@ -8,6 +8,7 @@ import {
 import { Button } from "@/common/ui/button";
 import { JadwalKelasType } from "./get-jadwal-kelas";
 import { cn } from "@/common/utils/utils";
+import { ListChecks, Pulse } from "@phosphor-icons/react/dist/ssr";
 
 export function ClassCard({ data }: { data: JadwalKelasType[0] }) {
   const isAbsenExist = data.AbsenMurid.some(
@@ -17,30 +18,30 @@ export function ClassCard({ data }: { data: JadwalKelasType[0] }) {
     (absen) => absen.status_absen === null
   ).length;
 
-  // Determine status colors
-  const getStatusColors = () => {
+  // Determine status colors and animations
+  const getStatusStyles = () => {
     if (!isAbsenExist) {
       return {
-        border: "border-destructive",
-        dot: "bg-destructive animate-ping",
-        dotWrapper: "bg-destructive",
+        button: "border-destructive",
+        wrapper: "before:bg-destructive/20 before:animate-ping before:scale-75",
+        icon: "text-destructive",
       };
     }
     if (jumlahMuridBelumAbsen === 0) {
       return {
-        border: "border-success",
-        dot: "bg-success",
-        dotWrapper: "bg-success",
+        button: "border-success",
+        wrapper: "",
+        icon: "text-success",
       };
     }
     return {
-      border: "border-warning",
-      dot: "bg-warning animate-ping",
-      dotWrapper: "bg-warning",
+      button: "border-warning",
+      wrapper: "before:bg-warning/20",
+      icon: "text-warning",
     };
   };
 
-  const statusColors = getStatusColors();
+  const statusStyles = getStatusStyles();
 
   return (
     <Card>
@@ -58,27 +59,25 @@ export function ClassCard({ data }: { data: JadwalKelasType[0] }) {
           }) || "00:00"}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <Button
-          variant="outline"
-          size="sm"
-          className={cn("gap-2", statusColors.border)}
+      <CardContent className="flex gap-2">
+        <div
+          className={cn(
+            "relative before:absolute before:-inset-[2px] before:rounded-md before:origin-center",
+            statusStyles.wrapper
+          )}
         >
-          <div className="relative flex items-center justify-center w-2 h-2">
-            <span
-              className={cn(
-                "absolute inline-flex rounded-full w-full h-full opacity-75",
-                statusColors.dot
-              )}
-            />
-            <span
-              className={cn(
-                "relative inline-flex rounded-full w-full h-full",
-                statusColors.dotWrapper
-              )}
-            />
-          </div>
-          Absen
+          <Button
+            variant="outline"
+            size="sm"
+            className={cn("gap-2 relative z-10", statusStyles.button)}
+          >
+            <ListChecks className={statusStyles.icon} />
+            Absen
+          </Button>
+        </div>
+        <Button size="sm" variant="outline">
+          <Pulse />
+          Kekatifan
         </Button>
       </CardContent>
     </Card>
