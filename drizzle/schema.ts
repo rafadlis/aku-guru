@@ -6,13 +6,34 @@ import {
   foreignKey,
   integer,
   smallint,
-  serial,
-  varchar,
+  index,
   unique,
   check,
+  serial,
+  varchar,
   primaryKey,
+  pgSequence,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+
+export const status_absen = pgEnum("status_absen", [
+  "hadir",
+  "ijin",
+  "sakit",
+  "alpha",
+  "tugas",
+  "lainnya",
+]);
+
+export const NilaiKeaktifan_id_seq = pgSequence("NilaiKeaktifan_id_seq", {
+  startWith: "1",
+  increment: "1",
+  minValue: "1",
+  maxValue: "9223372036854775807",
+  cache: "1",
+  cycle: false,
+});
 
 export const Provinsi = pgTable("Provinsi", {
   kode_provinsi: text().primaryKey().notNull(),
@@ -30,12 +51,47 @@ export const MataPelajaran = pgTable("MataPelajaran", {
       minValue: 1,
       maxValue: 9223372036854775807,
     }),
-  created_at: timestamp({ withTimezone: true, mode: "string" })
-    .defaultNow()
-    .notNull(),
+  created_at: timestamp({ withTimezone: true, mode: "string" }).defaultNow().notNull(),
   mata_pelajaran: text(),
   tingkat_kelas: text(),
 });
+
+export const AbsenMurid = pgTable(
+  "AbsenMurid",
+  {
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    id: bigint({ mode: "number" })
+      .primaryKey()
+      .generatedByDefaultAsIdentity({
+        name: "AbsenMurid_id_seq",
+        startWith: 1,
+        increment: 1,
+        minValue: 1,
+        maxValue: 9223372036854775807,
+      }),
+    created_at: timestamp({ withTimezone: true, mode: "string" }).defaultNow().notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    jadwal_id: bigint({ mode: "number" }).notNull(),
+    murid_id: integer().notNull(),
+    status_absen: status_absen(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.jadwal_id],
+      foreignColumns: [Jadwal.id],
+      name: "AbsenMurid_jadwal_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    foreignKey({
+      columns: [table.murid_id],
+      foreignColumns: [Murid.id],
+      name: "AbsenMurid_murid_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+  ],
+);
 
 export const Sekolah = pgTable(
   "Sekolah",
@@ -50,9 +106,7 @@ export const Sekolah = pgTable(
         minValue: 1,
         maxValue: 9223372036854775807,
       }),
-    created_at: timestamp({ withTimezone: true, mode: "string" })
-      .defaultNow()
-      .notNull(),
+    created_at: timestamp({ withTimezone: true, mode: "string" }).defaultNow().notNull(),
     nama_sekolah: text(),
     kode_provinsi: text(),
     kode_kabupaten: text(),
@@ -73,7 +127,7 @@ export const Sekolah = pgTable(
     })
       .onUpdate("cascade")
       .onDelete("set null"),
-  ]
+  ],
 );
 
 export const NilaiTugas = pgTable(
@@ -89,9 +143,7 @@ export const NilaiTugas = pgTable(
         minValue: 1,
         maxValue: 9223372036854775807,
       }),
-    created_at: timestamp({ withTimezone: true, mode: "string" })
-      .defaultNow()
-      .notNull(),
+    created_at: timestamp({ withTimezone: true, mode: "string" }).defaultNow().notNull(),
     murid_id: integer(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     tugas_id: bigint({ mode: "number" }),
@@ -112,7 +164,56 @@ export const NilaiTugas = pgTable(
     })
       .onUpdate("cascade")
       .onDelete("cascade"),
-  ]
+  ],
+);
+
+export const NilaiKeaktifan = pgTable(
+  "NilaiKeaktifan",
+  {
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    id: bigint({ mode: "number" })
+      .primaryKey()
+      .generatedByDefaultAsIdentity({
+        name: "nilai_keaktifan_id_seq",
+        startWith: 1,
+        increment: 1,
+        minValue: 1,
+        maxValue: 9223372036854775807,
+        cache: 1,
+      }),
+    created_at: timestamp({ withTimezone: true, mode: "string" }).defaultNow().notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    jadwal_id: bigint({ mode: "number" }).notNull(),
+    murid_id: integer().notNull(),
+    nilai: integer().notNull(),
+    catatan: text(),
+  },
+  (table) => [
+    index("nilai_keaktifan_jadwal_id_idx").using(
+      "btree",
+      table.jadwal_id.asc().nullsLast().op("int8_ops"),
+    ),
+    index("nilai_keaktifan_murid_id_idx").using(
+      "btree",
+      table.murid_id.asc().nullsLast().op("int4_ops"),
+    ),
+    foreignKey({
+      columns: [table.jadwal_id],
+      foreignColumns: [Jadwal.id],
+      name: "NilaiKeaktifan_jadwal_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    foreignKey({
+      columns: [table.murid_id],
+      foreignColumns: [Murid.id],
+      name: "NilaiKeaktifan_murid_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    unique("NilaiKeaktifan_id_key").on(table.id),
+    check("nilai_range_check", sql`(nilai >= 0) AND (nilai <= 100)`),
+  ],
 );
 
 export const PenempatanGuru = pgTable(
@@ -128,9 +229,7 @@ export const PenempatanGuru = pgTable(
         minValue: 1,
         maxValue: 9223372036854775807,
       }),
-    created_at: timestamp({ withTimezone: true, mode: "string" })
-      .defaultNow()
-      .notNull(),
+    created_at: timestamp({ withTimezone: true, mode: "string" }).defaultNow().notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     guru_id: bigint({ mode: "number" }).notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -153,7 +252,7 @@ export const PenempatanGuru = pgTable(
     })
       .onUpdate("cascade")
       .onDelete("set null"),
-  ]
+  ],
 );
 
 export const Tugas = pgTable(
@@ -169,9 +268,7 @@ export const Tugas = pgTable(
         minValue: 1,
         maxValue: 9223372036854775807,
       }),
-    created_at: timestamp({ withTimezone: true, mode: "string" })
-      .defaultNow()
-      .notNull(),
+    created_at: timestamp({ withTimezone: true, mode: "string" }).defaultNow().notNull(),
     tanggal_tugas: timestamp({ withTimezone: true, mode: "string" }),
     jatuh_tempo: timestamp({ withTimezone: true, mode: "string" }),
     nama_tugas: text(),
@@ -186,7 +283,7 @@ export const Tugas = pgTable(
     })
       .onUpdate("cascade")
       .onDelete("cascade"),
-  ]
+  ],
 );
 
 export const Guru = pgTable("Guru", {
@@ -200,9 +297,7 @@ export const Guru = pgTable("Guru", {
       minValue: 1,
       maxValue: 9223372036854775807,
     }),
-  created_at: timestamp({ withTimezone: true, mode: "string" })
-    .defaultNow()
-    .notNull(),
+  created_at: timestamp({ withTimezone: true, mode: "string" }).defaultNow().notNull(),
   nama_guru: text().notNull(),
   nama_panggilan: text(),
 });
@@ -222,7 +317,7 @@ export const NilaiUAS = pgTable(
     })
       .onUpdate("cascade")
       .onDelete("cascade"),
-  ]
+  ],
 );
 
 export const NamaLain = pgTable(
@@ -241,7 +336,7 @@ export const NamaLain = pgTable(
     })
       .onUpdate("cascade")
       .onDelete("set null"),
-  ]
+  ],
 );
 
 export const Murid = pgTable(
@@ -266,7 +361,7 @@ export const Murid = pgTable(
       .onDelete("set null"),
     unique("Murid_NISN_key").on(table.NISN),
     check("Murid_NISN_check", sql`length("NISN") = 10`),
-  ]
+  ],
 );
 
 export const Kelas = pgTable(
@@ -282,9 +377,7 @@ export const Kelas = pgTable(
         minValue: 1,
         maxValue: 9223372036854775807,
       }),
-    created_at: timestamp({ withTimezone: true, mode: "string" })
-      .defaultNow()
-      .notNull(),
+    created_at: timestamp({ withTimezone: true, mode: "string" }).defaultNow().notNull(),
     nama_kelas: text(),
     tingkat: text(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -298,7 +391,7 @@ export const Kelas = pgTable(
     })
       .onUpdate("cascade")
       .onDelete("set null"),
-  ]
+  ],
 );
 
 export const Jadwal = pgTable(
@@ -314,9 +407,7 @@ export const Jadwal = pgTable(
         minValue: 1,
         maxValue: 9223372036854775807,
       }),
-    created_at: timestamp({ withTimezone: true, mode: "string" })
-      .defaultNow()
-      .notNull(),
+    created_at: timestamp({ withTimezone: true, mode: "string" }).defaultNow().notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     kelas_id: bigint({ mode: "number" }).notNull(),
     waktu_mulai: timestamp({ withTimezone: true, mode: "string" }).notNull(),
@@ -348,7 +439,7 @@ export const Jadwal = pgTable(
     })
       .onUpdate("cascade")
       .onDelete("set null"),
-  ]
+  ],
 );
 
 export const Kabupaten = pgTable(
@@ -366,11 +457,8 @@ export const Kabupaten = pgTable(
     })
       .onUpdate("cascade")
       .onDelete("set null"),
-    primaryKey({
-      columns: [table.kode_kabupaten, table.kode_provinsi],
-      name: "Kabupaten_pkey",
-    }),
-  ]
+    primaryKey({ columns: [table.kode_kabupaten, table.kode_provinsi], name: "Kabupaten_pkey" }),
+  ],
 );
 
 export const Kecamatan = pgTable(
@@ -397,14 +485,10 @@ export const Kecamatan = pgTable(
       .onUpdate("cascade")
       .onDelete("set null"),
     primaryKey({
-      columns: [
-        table.kode_provinsi,
-        table.kode_kabupaten,
-        table.kode_kecamatan,
-      ],
+      columns: [table.kode_provinsi, table.kode_kabupaten, table.kode_kecamatan],
       name: "Kecamatan_pkey",
     }),
-  ]
+  ],
 );
 
 export const DesaKelurahan = pgTable(
@@ -425,16 +509,8 @@ export const DesaKelurahan = pgTable(
       .onUpdate("cascade")
       .onDelete("set null"),
     foreignKey({
-      columns: [
-        table.kode_provinsi,
-        table.kode_kabupaten,
-        table.kode_kecamatan,
-      ],
-      foreignColumns: [
-        Kecamatan.kode_provinsi,
-        Kecamatan.kode_kabupaten,
-        Kecamatan.kode_kecamatan,
-      ],
+      columns: [table.kode_provinsi, table.kode_kabupaten, table.kode_kecamatan],
+      foreignColumns: [Kecamatan.kode_provinsi, Kecamatan.kode_kabupaten, Kecamatan.kode_kecamatan],
       name: "DesaKelurahan_kode_kecamatan_kode_kabupaten_kode_provinsi_fkey",
     })
       .onUpdate("cascade")
@@ -455,5 +531,5 @@ export const DesaKelurahan = pgTable(
       ],
       name: "DesaKelurahan_pkey",
     }),
-  ]
+  ],
 );

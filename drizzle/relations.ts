@@ -1,5 +1,44 @@
 import { relations } from "drizzle-orm/relations";
-import { Kabupaten, Sekolah, Provinsi, Murid, NilaiTugas, Tugas, Guru, PenempatanGuru, MataPelajaran, NamaLain, NilaiUAS, Kelas, Jadwal, Kecamatan, DesaKelurahan } from "./schema";
+import { Jadwal, AbsenMurid, Murid, Kabupaten, Sekolah, Provinsi, NilaiTugas, Tugas, NilaiKeaktifan, Guru, PenempatanGuru, MataPelajaran, NamaLain, NilaiUAS, Kelas, Kecamatan, DesaKelurahan } from "./schema";
+
+export const AbsenMuridRelations = relations(AbsenMurid, ({one}) => ({
+	Jadwal: one(Jadwal, {
+		fields: [AbsenMurid.jadwal_id],
+		references: [Jadwal.id]
+	}),
+	Murid: one(Murid, {
+		fields: [AbsenMurid.murid_id],
+		references: [Murid.id]
+	}),
+}));
+
+export const JadwalRelations = relations(Jadwal, ({one, many}) => ({
+	AbsenMurids: many(AbsenMurid),
+	NilaiKeaktifans: many(NilaiKeaktifan),
+	Kela: one(Kelas, {
+		fields: [Jadwal.kelas_id],
+		references: [Kelas.id]
+	}),
+	MataPelajaran: one(MataPelajaran, {
+		fields: [Jadwal.mapel_id],
+		references: [MataPelajaran.id]
+	}),
+	PenempatanGuru: one(PenempatanGuru, {
+		fields: [Jadwal.penempatan_guru_id],
+		references: [PenempatanGuru.id]
+	}),
+}));
+
+export const MuridRelations = relations(Murid, ({one, many}) => ({
+	AbsenMurids: many(AbsenMurid),
+	NilaiTugases: many(NilaiTugas),
+	NilaiKeaktifans: many(NilaiKeaktifan),
+	NamaLains: many(NamaLain),
+	Kela: one(Kelas, {
+		fields: [Murid.kelas_id],
+		references: [Kelas.id]
+	}),
+}));
 
 export const SekolahRelations = relations(Sekolah, ({one, many}) => ({
 	Kabupaten: one(Kabupaten, {
@@ -42,20 +81,22 @@ export const NilaiTugasRelations = relations(NilaiTugas, ({one}) => ({
 	}),
 }));
 
-export const MuridRelations = relations(Murid, ({one, many}) => ({
-	NilaiTugases: many(NilaiTugas),
-	NamaLains: many(NamaLain),
-	Kela: one(Kelas, {
-		fields: [Murid.kelas_id],
-		references: [Kelas.id]
-	}),
-}));
-
 export const TugasRelations = relations(Tugas, ({one, many}) => ({
 	NilaiTugases: many(NilaiTugas),
 	MataPelajaran: one(MataPelajaran, {
 		fields: [Tugas.mapel_id],
 		references: [MataPelajaran.id]
+	}),
+}));
+
+export const NilaiKeaktifanRelations = relations(NilaiKeaktifan, ({one}) => ({
+	Jadwal: one(Jadwal, {
+		fields: [NilaiKeaktifan.jadwal_id],
+		references: [Jadwal.id]
+	}),
+	Murid: one(Murid, {
+		fields: [NilaiKeaktifan.murid_id],
+		references: [Murid.id]
 	}),
 }));
 
@@ -102,21 +143,6 @@ export const KelasRelations = relations(Kelas, ({one, many}) => ({
 		references: [Sekolah.id]
 	}),
 	Jadwals: many(Jadwal),
-}));
-
-export const JadwalRelations = relations(Jadwal, ({one}) => ({
-	Kela: one(Kelas, {
-		fields: [Jadwal.kelas_id],
-		references: [Kelas.id]
-	}),
-	MataPelajaran: one(MataPelajaran, {
-		fields: [Jadwal.mapel_id],
-		references: [MataPelajaran.id]
-	}),
-	PenempatanGuru: one(PenempatanGuru, {
-		fields: [Jadwal.penempatan_guru_id],
-		references: [PenempatanGuru.id]
-	}),
 }));
 
 export const KecamatanRelations = relations(Kecamatan, ({one, many}) => ({
