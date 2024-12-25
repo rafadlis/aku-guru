@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
+    "@phosphor-icons/react": "^2.1.5-alpha.3",
     "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.1",
     "@supabase/ssr": "^0.5.2",
@@ -36,9 +37,9 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
+    "@types/prettier": "^3.0.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/prettier": "^3.0.0",
     "drizzle-kit": "^0.30.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.1-canary.2",
