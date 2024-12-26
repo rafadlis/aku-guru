@@ -1,16 +1,13 @@
-import { CardsComponent } from "@/features/dashboard/cards-component";
-import { TugasTable } from "@/features/tugas/table";
 import { Suspense } from "react";
+import { ClassCardsComponent } from "@/features/dashboard/class-cards-component";
+import { ClassCardsSkeleton } from "@/features/dashboard/class-cards-skeleton";
 
 export default function DashboardPage() {
   return (
-    <section>
-      <Suspense fallback={<div>Loading...</div>}>
-        <CardsComponent />
+    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <Suspense fallback={<ClassCardsSkeleton />}>
+        <ClassCardsComponent />
       </Suspense>
-      <Suspense fallback={<div>Loading...</div>}>
-        <TugasTable />
-      </Suspense>
-    </section>
+    </div>
   );
 }
