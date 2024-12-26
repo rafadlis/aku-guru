@@ -6,7 +6,7 @@ export async function getJadwalKelas() {
   const supabase = await createSupabaseClient();
   const { data, error } = await supabase.from("Jadwal").select(`
       id, 
-      Kelas(nama_kelas), 
+      Kelas(nama_kelas, Murid(id)), 
       waktu_mulai, 
       waktu_selesai, 
       MataPelajaran(mata_pelajaran), 
