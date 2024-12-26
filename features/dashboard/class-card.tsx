@@ -14,6 +14,7 @@ import {
   Pulse,
   UsersThree,
 } from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link";
 
 export function ClassCard({ data }: { data: JadwalKelasType[0] }) {
   const jumlahMurid = data.Kelas?.Murid.length;
@@ -111,18 +112,24 @@ export function ClassCard({ data }: { data: JadwalKelasType[0] }) {
             variant="outline"
             size="sm"
             className={cn("gap-2 relative z-10", statusStyles.absen.button)}
+            asChild
           >
-            <ListChecks className={statusStyles.absen.icon} />
-            Absen
+            <Link href={`/dashboard/schedule/${data.id}/absent`}>
+              <ListChecks className={statusStyles.absen.icon} />
+              Absen
+            </Link>
           </Button>
         </div>
         <Button
           size="sm"
           variant="outline"
           className={cn("gap-2 bg-none z-20", statusStyles.keaktifan.button)}
+          asChild
         >
-          <Pulse className={statusStyles.keaktifan.icon} />
-          Keaktifan
+          <Link href={`/dashboard/schedule/${data.id}/activity`}>
+            <Pulse className={statusStyles.keaktifan.icon} />
+            Keaktifan
+          </Link>
         </Button>
         <Button size="sm" variant="outline" className="gap-2">
           <UsersThree />
