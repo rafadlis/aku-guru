@@ -28,7 +28,7 @@ import { NavUser } from "@/common/nav-user";
 const user = {
   name: "Guru Indonesia",
   email: "guru@sekolah.id",
-  avatar: "/avatars/teacher.png",
+  avatar: "",
 };
 
 export function AppSidebar() {
@@ -55,7 +55,7 @@ export function AppSidebar() {
                 <SidebarMenuButton asChild>
                   <Link href="/dashboard">
                     <House weight="duotone" />
-                    <span>Beranda</span>
+                    <span>Dasbor</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
