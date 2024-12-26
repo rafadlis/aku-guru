@@ -5,6 +5,8 @@
 - All the code should be written in typescript.
 - The app is using app router and server actions.
 - The App using Shadcn UI that configured in `@/components.json` file and put in `@/common/ui` folder.
+- for adding new component from shadcn ui, always the command `npx shadcn@latest add <component-name>` as the latest version of shadcn ui.
+- don't use `shadcn-ui@latest` for adding new component from shadcn ui, use `npx shadcn@latest add <component-name>` instead.
 - Always use the best Shadcn `Form` component example for make a form.
 - Always use phosphoricons for the icon that imported from `@phosphor-icons/react/dist/ssr`
 - use zod for validation for the form that integrated with drizzle orm and shadcn form.
