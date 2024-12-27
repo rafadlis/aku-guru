@@ -40,6 +40,7 @@
       /utils
       /lib
     ```
+- Always create separate files for fetching, avoid fetching in `page.tsx` or `layout.tsx` file then use suspense when put in the page.tsx or layout.tsx file or other component.
 - don't use `shadcn-ui@latest` for adding new component from shadcn ui, use `npx shadcn@latest add <component-name>` instead.
 - Always use the best Shadcn `Form` component example for make a form.
 - Always use phosphoricons for the icon that imported from `@phosphor-icons/react/dist/ssr`
