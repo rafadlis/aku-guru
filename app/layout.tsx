@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
-import './globals.css';
-import { Toaster } from '@/common/ui/sonner';
+import type { Metadata } from "next";
+import "./globals.css";
+import { Toaster } from "@/common/ui/sonner";
 
 export const metadata: Metadata = {
-  title: 'Aku Guru',
-  description: 'Teacher Attendance & Grade Management System',
+  title: "Aku Guru",
+  description: "Manajemen Absensi & Nilai Siswa",
 };
 
 export default function RootLayout({
